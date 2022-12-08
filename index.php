@@ -42,7 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $sessionId = json_decode($content)->session->id;
 
     $updateUrl = $url = $endpoint . $merchantId . '/session/' . $sessionId;
-    
+
     // Update Session
     $response = $client->request(
         'PUT',
