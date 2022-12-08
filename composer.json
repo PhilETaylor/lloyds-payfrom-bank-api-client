@@ -1,8 +1,7 @@
 {
     "require": {
-      "ext-random": "*",
       "symfony/http-client": "^6.1",
       "symfony/var-dumper": "^6.1",
-        "symfony/dotenv": "^6.2"
+      "symfony/dotenv": "^6.2"
     }
 }
