@@ -112,6 +112,22 @@ class ApiService
 
     private function lloydsUpdateSession()
     {
+        $userData                = json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR);
+        @[$firstName, $lastName] = explode(' ', (string) $userData['name']);
+        [$dd, $mm, $yyyy]        = explode('/', (string) $userData['dob']);
+
+        if (\strlen($yyyy) == 2) {
+            $yyyy = '19' . $yyyy;
+        }
+
+        if (\strlen($mm) == 1) {
+            $mm = '0' . $mm;
+        }
+
+        if (\strlen($dd) == 1) {
+            $dd = '0' . $dd;
+        }
+
         try {
             $this->client->request(
                 'PUT',
@@ -122,11 +138,20 @@ class ApiService
                             'amount'            => number_format($this->amount, 2, '.'),
                             'currency'          => 'GBP',
                             'id'                => $this->orderId,
+                            'reference'         => implode(', ', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)),
                             'custom'            => implode(', ', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)),
-                            'customerReference' => json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)['name'],
+                            'customerReference' => $userData['name'],
+                            'requestorName'     => $userData['name'],
+                        ],
+                        'customer' => [
+                            'firstName'   => $firstName,
+                            'lastName'    => $lastName,
+                            'dateOfBirth' => implode('-', [$yyyy, $mm, $dd]),
                         ],
                         'transaction' => [
-                            'id' => $this->transactionId,
+                            'reference'    => implode(', ', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)),
+                            'merchantNote' => implode(', ', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)),
+                            'id'           => $this->transactionId,
                         ],
                         'browserPayment' => [
                             'operation' => 'PAY',
@@ -160,7 +185,7 @@ class ApiService
                 'auth_basic'  => ['merchant.' . $this->merchantId, $this->password],
             ]
         );
-
+        dd(json_decode($response->getContent(false), null, 512, \JSON_THROW_ON_ERROR));
         return json_decode($response->getContent(false), true, 512, \JSON_THROW_ON_ERROR);
     }
 
