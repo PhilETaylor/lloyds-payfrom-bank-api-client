@@ -185,7 +185,7 @@ class ApiService
                 'auth_basic'  => ['merchant.' . $this->merchantId, $this->password],
             ]
         );
-        dd(json_decode($response->getContent(false), null, 512, \JSON_THROW_ON_ERROR));
+        
         return json_decode($response->getContent(false), true, 512, \JSON_THROW_ON_ERROR);
     }
 
