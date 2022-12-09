@@ -11,7 +11,6 @@ namespace App;
 
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\HttpClient;
-use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ApiService
@@ -120,9 +119,11 @@ class ApiService
                 [
                     'json' => [
                         'order' => [
-                            'amount' =>  number_format($this->amount, 2,'.'),
-                            'currency' => 'GBP',
-                            'id' => $this->orderId,
+                            'amount'            => number_format($this->amount, 2, '.'),
+                            'currency'          => 'GBP',
+                            'id'                => $this->orderId,
+                            'custom'            => implode(', ', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)),
+                            'customerReference' => json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)['name'],
                         ],
                         'transaction' => [
                             'id' => $this->transactionId,
@@ -132,13 +133,13 @@ class ApiService
                             'returnUrl' => $this->returnUrl,
                         ],
                     ],
-                    'verify_host' => !($_ENV['PROXY'] === "true"),
-                    'verify_peer' => !($_ENV['PROXY'] === "true"),
-                    'proxy' => $_ENV['PROXY'] === "true" ? '127.0.0.1:8888' : false,
-                    'auth_basic' => ['merchant.' . $this->merchantId, $this->password],
+                    'verify_host' => ! ($_ENV['PROXY'] === "true"),
+                    'verify_peer' => ! ($_ENV['PROXY'] === "true"),
+                    'proxy'       => $_ENV['PROXY'] === "true" ? '127.0.0.1:8888' : false,
+                    'auth_basic'  => ['merchant.' . $this->merchantId, $this->password],
                 ]
             );
-        } catch (ClientException $exception){
+        } catch (ClientException $exception) {
             echo $exception->getResponse()->getContent(false);
         }
     }
