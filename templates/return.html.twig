@@ -9,11 +9,24 @@
     {% set status = res.transaction[0].response.gatewayCode %}
 
     {% if status == 'APPROVED' %}
-        <p class="text-success"><strong>Your payment has been approved by your bank. Thank you.</strong></p>
+        <p class="text-success"><strong>Your payment has now been approved by your bank. Thank you.</strong></p>
         <p>You can now close this browser window.</p>
 
+    {% elseif status == 'PENDING' %}
+        <p class="text-warning"><strong>The payment has been submitted to your bank and is pending them sending the
+                funds to us. One moment please... </strong></p>
+        <p>This process normally completes in a few moments. We will refresh this page in a moment.</p>
+        <p>You don't need to stay here, if there is a problem we will be in touch. Sometimes banks can be slow.</p>
+        <script>
+          setTimeout(function () {
+            window.location.reload(1);
+          }, 5000);
+        </script>
     {% else %}
         <p class="text-danger"><strong>Your payment was not successful!</strong></p>
+        <p>The code returned was
+        <pre>{{ status }}</pre></p>
+        <p>Please contact us.</p>
     {% endif %}
 
     <hr>
