@@ -1,2 +1,5 @@
 /.env
 /.idea
+/vendor
+.DS_Store
+/.twig-cs-fixer.cache

@@ -1,0 +1,24 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+
+    <h1>Payment status...</h1>
+
+    <pre>Payment Reference: {{ orderId }}</pre>
+
+    {% set status = res.transaction[0].response.gatewayCode %}
+
+    {% if status == 'APPROVED' %}
+        <p class="text-success"><strong>Your payment has been approved by your bank. Thank you.</strong></p>
+        <p>You can now close this browser window.</p>
+
+    {% else %}
+        <p class="text-danger"><strong>Your payment was not successful!</strong></p>
+    {% endif %}
+
+    <hr>
+    <p class="mt-3">If you encountered any issues with this service please <a
+                href="https://www.ospreyhousing.org.uk/contact" target="_blank" rel="noreferrer noopener">contact
+            us</a>. </p>
+
+{% endblock %}

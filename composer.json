@@ -1,7 +1,19 @@
 {
+  "autoload": {
+    "psr-4": {
+      "App\\": "src/"
+    }
+  },
     "require": {
       "symfony/http-client": "^6.1",
       "symfony/var-dumper": "^6.1",
-      "symfony/dotenv": "^6.2"
-    }
+      "symfony/dotenv": "^6.2",
+        "twig/twig": "^3.0"
+
+    },
+  "require-dev": {
+    "vincentlanglet/twig-cs-fixer": "^0.8.0",
+    "rector/rector": "^0.15.0",
+    "symplify/easy-coding-standard": "^11.1"
+  }
 }

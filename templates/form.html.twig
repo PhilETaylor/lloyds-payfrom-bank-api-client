@@ -1,0 +1,70 @@
+{% extends 'template.html.twig' %}
+
+{% block body %}
+
+    <h1>Make a payment.</h1>
+
+    <p class="lead">This service allows you to make a payment direct from your bank account.</p>
+
+    <p>You will need to have already been signed up with online/digital banking with your bank, and your bank to be
+        opted into OpenBanking.</p>
+
+    <p>After pressing continue you will be given a choice of banks. If your bank is listed then select its icon, or its
+        name from the dropdown list.</p>
+
+    <p>If your bank is not listed, then you will not be able to use this online service and you should contact us to
+        make payment manually.</p>
+
+    <p class="mt-3">If you encounter any issues with this service please <a
+                href="https://www.ospreyhousing.org.uk/contact" target="_blank" rel="noreferrer noopener">contact
+            us</a>. </p>
+
+    <hr/>
+
+    <form method="post" action="index.php">
+
+        <div class="mb-3">
+            <label class="form-label" for="name">Your Full Name</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-person-square"></i></span>
+                <input class="form-control" name="name" value="">
+            </div>
+            <small class="form-text text-muted">Example: Phil Taylor</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="address">Your Address</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-house-check-fill"></i></span>
+                <input class="form-control" name="address" value="">
+            </div>
+            <small class="form-text text-muted">Your first line of your address, and your postcode.</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="address">Your Date Of Birth</label>
+            <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-calendar"></i></span>
+                <input class="form-control" name="dob" placeholder="dd/mm/yyyy" value="">
+            </div>
+            <small class="form-text text-muted">Used for validation. Please input in format dd/mm/yyyy For example:
+                08/03/1978</small>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label" for="amount">Amount To Pay</label>
+            <div class="input-group">
+                <span class="input-group-text">£</span>
+                <input class="form-control" name="amount" value="">
+            </div>
+            <small class="form-text text-muted">Example: 99.50 to pay Ninety Nine pounds and fifty
+                pence.</small>
+        </div>
+
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <input class="btn btn-success mt-3 float-end" type="submit" value="Continue">
+        </div>
+
+    </form>
+
+{% endblock %}
