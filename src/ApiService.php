@@ -9,6 +9,7 @@
 
 namespace App;
 
+use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -119,7 +120,7 @@ class ApiService
                 [
                     'json' => [
                         'order' => [
-                            'amount' => $this->amount,
+                            'amount' =>  number_format($this->amount, 2,'.'),
                             'currency' => 'GBP',
                             'id' => $this->orderId,
                         ],
@@ -137,8 +138,8 @@ class ApiService
                     'auth_basic' => ['merchant.' . $this->merchantId, $this->password],
                 ]
             );
-        } catch (HttpExceptionInterface $exception){
-            dd($exception->getResponse());
+        } catch (ClientException $exception){
+            echo $exception->getResponse()->getContent(false);
         }
     }
 
