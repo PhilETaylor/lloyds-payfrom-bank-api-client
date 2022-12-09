@@ -56,8 +56,13 @@ class ApiService
         if (\array_key_exists('orderId', $_SESSION)) {
             $this->orderId = $this->transactionId = $_SESSION['orderId'];
         } else {
-            $this->orderId = $this->transactionId = $_SESSION['orderId'] = bin2hex(random_bytes(8));
+            $this->setOrderId();
         }
+    }
+
+    private function setOrderId(): string
+    {
+        return $this->orderId = $this->transactionId = $_SESSION['orderId'] = bin2hex(random_bytes(8));
     }
 
     public function setUnfilteredUserData(array $unfilteredUserData)
@@ -68,6 +73,7 @@ class ApiService
 
     public function prepareSession(): array
     {
+        $this->setOrderId();
         $this->lloydsCreateSession();
         $this->lloydsUpdateSession();
 
