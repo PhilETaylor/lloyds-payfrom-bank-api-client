@@ -10,6 +10,7 @@
 namespace App;
 
 use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class ApiService
@@ -111,30 +112,34 @@ class ApiService
 
     private function lloydsUpdateSession()
     {
-        $this->client->request(
-            'PUT',
-            $this->createSessionUrl . '/' . $this->sessionId,
-            [
-                'json' => [
-                    'order' => [
-                        'amount'   => $this->amount,
-                        'currency' => 'GBP',
-                        'id'       => $this->orderId,
+        try {
+            $this->client->request(
+                'PUT',
+                $this->createSessionUrl . '/' . $this->sessionId,
+                [
+                    'json' => [
+                        'order' => [
+                            'amount' => $this->amount,
+                            'currency' => 'GBP',
+                            'id' => $this->orderId,
+                        ],
+                        'transaction' => [
+                            'id' => $this->transactionId,
+                        ],
+                        'browserPayment' => [
+                            'operation' => 'PAY',
+                            'returnUrl' => $this->returnUrl,
+                        ],
                     ],
-                    'transaction' => [
-                        'id' => $this->transactionId,
-                    ],
-                    'browserPayment' => [
-                        'operation' => 'PAY',
-                        'returnUrl' => $this->returnUrl,
-                    ],
-                ],
-                'verify_host' => ! ($_ENV['PROXY'] === "true"),
-                'verify_peer' => ! ($_ENV['PROXY'] === "true"),
-                'proxy'       => $_ENV['PROXY'] === "true" ? '127.0.0.1:8888' : false,
-                'auth_basic'  => ['merchant.' . $this->merchantId, $this->password],
-            ]
-        );
+                    'verify_host' => !($_ENV['PROXY'] === "true"),
+                    'verify_peer' => !($_ENV['PROXY'] === "true"),
+                    'proxy' => $_ENV['PROXY'] === "true" ? '127.0.0.1:8888' : false,
+                    'auth_basic' => ['merchant.' . $this->merchantId, $this->password],
+                ]
+            );
+        } catch (HttpExceptionInterface $exception){
+            dd($exception->getResponse());
+        }
     }
 
     public function getTransactionData(): array
