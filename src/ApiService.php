@@ -68,7 +68,8 @@ class ApiService
 
     public function setUnfilteredUserData(array $unfilteredUserData)
     {
-        $this->amount   = \floatval($unfilteredUserData['amount']);
+        $this->amount = \floatval($unfilteredUserData['amount']);
+        unset($unfilteredUserData['amount']);
         $this->userData = json_encode($unfilteredUserData, \JSON_THROW_ON_ERROR);
     }
 
@@ -112,45 +113,28 @@ class ApiService
 
     private function lloydsUpdateSession()
     {
-        $userData                = json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR);
-        @[$firstName, $lastName] = explode(' ', (string) $userData['name']);
-        [$dd, $mm, $yyyy]        = explode('/', (string) $userData['dob']);
-
-        if (\strlen($yyyy) == 2) {
-            $yyyy = '19' . $yyyy;
-        }
-
-        if (\strlen($mm) == 1) {
-            $mm = '0' . $mm;
-        }
-
-        if (\strlen($dd) == 1) {
-            $dd = '0' . $dd;
-        }
-
         try {
+            $reference = substr(
+                str_replace(' ', '', implode(',', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR))),
+                0,
+                40
+            );
+
             $this->client->request(
                 'PUT',
                 $this->createSessionUrl . '/' . $this->sessionId,
                 [
                     'json' => [
                         'order' => [
-                            'amount'            => number_format($this->amount, 2, '.'),
-                            'currency'          => 'GBP',
-                            'id'                => $this->orderId,
-                            'reference'         => implode(', ', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)),
-                            'custom'            => implode(', ', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)),
-                            'customerReference' => $userData['name'],
-                            'requestorName'     => $userData['name'],
-                        ],
-                        'customer' => [
-                            'firstName'   => $firstName,
-                            'lastName'    => $lastName,
-                            'dateOfBirth' => implode('-', [$yyyy, $mm, $dd]),
+                            'amount'    => number_format($this->amount, 2, '.'),
+                            'currency'  => 'GBP',
+                            'id'        => $this->orderId,
+                            'reference' => $reference,
+                            'custom'    => $reference,
                         ],
                         'transaction' => [
-                            'reference'    => implode(', ', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)),
-                            'merchantNote' => implode(', ', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR)),
+                            'reference'    => $reference,
+                            'merchantNote' => $reference,
                             'id'           => $this->transactionId,
                         ],
                         'browserPayment' => [
@@ -185,7 +169,7 @@ class ApiService
                 'auth_basic'  => ['merchant.' . $this->merchantId, $this->password],
             ]
         );
-        
+
         return json_decode($response->getContent(false), true, 512, \JSON_THROW_ON_ERROR);
     }
 
