@@ -53,8 +53,8 @@ return static function (ECSConfig $ecsConfig): void {
 
     $ecsConfig->ruleWithConfiguration(HeaderCommentFixer::class, [
         'header' => <<<EOF
-@copyright  Copyright (C) 2022 Blue Flame Digital Solutions Limited / Phil Taylor. All rights reserved.
-@copyright  Copyright (C) 2022 Red Evolution Limited. All rights reserved.
+@copyright  Copyright (C) 2022,2023 Blue Flame Digital Solutions Limited / Phil Taylor. All rights reserved.
+@copyright  Copyright (C) 2022,2023 Red Evolution Limited. All rights reserved.
 @author     Phil Taylor <phil@phil-taylor.com>
 @see        https://github.com/PhilETaylor/lloyds-payfrom-bank-api-client
 @license    The GNU General Public License v3.0
