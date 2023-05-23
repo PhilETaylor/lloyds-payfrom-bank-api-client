@@ -65,10 +65,10 @@ class ApiService
 
     private function setOrderId(): void
     {
-        // Result will be HOURS,REFERENCE,ADDRESSLINE1
+        // Result will be UNIQ,REFERENCE,ADDRESSLINE1
         $userDataString = substr(
-            // Add uniqueness - number of hours since the epoch should be enough
-            round(time() / 3600) . ','
+            // Add uniqueness
+            strtoupper(bin2hex(random_bytes(3))).','
             // and append the user data
             . str_replace(' ', '', implode(',', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR))),
             0,
