@@ -2,6 +2,14 @@
 
 A fully working PHP 8 integration of the UK Lloyds Bank PayFrom Open Banking API
 
+# Limitations
+
+Every order id has to be unique. As this is a stateless app with no db or concept of state, we are using the number of
+hours since the epoch, along with the user data, to generate a unique order id
+
+This will also limit a user from paying twice in the same hour, with the same address and the same amount. But I think
+we can live with that.
+
 # links
 
 ## Live Production

@@ -27,9 +27,9 @@ class ApiService
 
     private readonly string $correlationId;
 
-    private string $sessionId;
+    private string $sessionId = '';
 
-    private string $userData;
+    private string $userData = '';
 
     private readonly HttpClientInterface $client;
 
@@ -39,9 +39,11 @@ class ApiService
 
     private float $amount;
 
-    private $returnUrl;
+    private string $returnUrl = '';
 
     private readonly string $merchantName;
+
+    private string $reference = '';
 
     public function __construct()
     {
@@ -55,22 +57,36 @@ class ApiService
 
         session_start();
         if (\array_key_exists('orderId', $_SESSION)) {
-            $this->orderId = $this->transactionId = $_SESSION['orderId'];
-        } else {
-            $this->setOrderId();
+            $this->orderId
+                = $this->transactionId
+                = $this->reference = $_SESSION['orderId'];
         }
     }
 
-    private function setOrderId(): string
+    private function setOrderId(): void
     {
-        return $this->orderId = $this->transactionId = $_SESSION['orderId'] = bin2hex(random_bytes(8));
+        // Result will be HOURS,REFERENCE,ADDRESSLINE1
+        $userDataString = substr(
+            // Add uniqueness - number of hours since the epoch should be enough
+            round(time() / 3600) . ','
+            // and append the user data
+            . str_replace(' ', '', implode(',', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR))),
+            0,
+            // Making sure the whole thing is less than 40 chars, truncating user data as needed.
+            40,
+        );
+
+        $this->orderId
+            = $this->transactionId
+            = $this->reference = $_SESSION['orderId'] = $userDataString;
     }
 
     public function setUnfilteredUserData(array $unfilteredUserData)
     {
-        $this->amount = \floatval($unfilteredUserData['amount']);
+        $this->amount = number_format((float) $unfilteredUserData['amount'], 2, '.', '');
+
         unset($unfilteredUserData['amount']);
-        $this->userData = json_encode($unfilteredUserData, \JSON_THROW_ON_ERROR);
+        $this->userData = ucwords(json_encode($unfilteredUserData, \JSON_THROW_ON_ERROR));
     }
 
     public function prepareSession(): array
@@ -114,27 +130,21 @@ class ApiService
     private function lloydsUpdateSession()
     {
         try {
-            $reference = substr(
-                str_replace(' ', '', implode(',', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR))),
-                0,
-                40
-            );
-
             $this->client->request(
                 'PUT',
                 $this->createSessionUrl . '/' . $this->sessionId,
                 [
                     'json'        => [
                         'order'          => [
-                            'amount'    => number_format($this->amount, 2, '.'),
+                            'amount'    => $this->amount,
                             'currency'  => 'GBP',
                             'id'        => $this->orderId,
-                            'reference' => $reference,
-                            'custom'    => $reference,
+                            'reference' => $this->reference,
+                            'custom'    => $this->reference,
                         ],
                         'transaction'    => [
-                            'reference'    => $reference,
-                            'merchantNote' => $reference,
+                            'reference'    => $this->reference,
+                            'merchantNote' => $this->reference,
                             'id'           => $this->transactionId,
                         ],
                         'browserPayment' => [
