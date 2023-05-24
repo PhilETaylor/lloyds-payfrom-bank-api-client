@@ -37,7 +37,7 @@ class ApiService
 
     private string $transactionId;
 
-    private float $amount;
+    private string $amount;
 
     private string $returnUrl = '';
 
