@@ -68,7 +68,7 @@ class ApiService
         // Result will be UNIQ.REFERENCE.ADDRESSLINE1
         $userDataString = substr(
             // Add uniqueness
-            strtoupper(bin2hex(random_bytes(3))).','
+            strtoupper(bin2hex(random_bytes(3))).'.'
             // and append the user data
             . str_replace(' ', '', implode('.', json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR))),
             0,
