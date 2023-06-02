@@ -76,9 +76,11 @@ class ApiService
             40,
         );
 
+        $data = json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR);
+
         $this->orderId
             = $this->transactionId
-            = $this->reference = $_SESSION['orderId'] = $userDataString;
+            = $this->reference = $_SESSION['orderId'] = $data['orderId']; //$userDataString;
     }
 
     public function setUnfilteredUserData(array $unfilteredUserData)
