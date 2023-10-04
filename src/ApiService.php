@@ -71,7 +71,7 @@ class ApiService
         $this->orderId
             = $this->transactionId
             = $this->reference = $_SESSION['orderId'] =
-            substr( (new \DateTime())->format('YmdHi').$data['tenancynumber'], 0, 16);
+            substr( (new \DateTime())->format('ymdHi').$data['tenancynumber'], 0, 16);
     }
 
     public function setUnfilteredUserData(array $unfilteredUserData)
