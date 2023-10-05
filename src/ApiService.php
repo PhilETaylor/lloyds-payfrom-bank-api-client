@@ -9,6 +9,7 @@
 
 namespace App;
 
+use DateTimeZone;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -63,17 +64,6 @@ class ApiService
         }
     }
 
-    private function setOrderId(): void
-    {
-
-        $data = json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR);
-
-        $this->orderId
-            = $this->transactionId
-            = $this->reference = $_SESSION['orderId'] =
-            substr( (new \DateTime())->format('ymdHi').$data['tenancynumber'], 0, 16);
-    }
-
     public function setUnfilteredUserData(array $unfilteredUserData)
     {
         $this->amount = number_format((float) $unfilteredUserData['amount'], 2, '.', '');
@@ -98,6 +88,20 @@ class ApiService
         ];
     }
 
+    private function setOrderId(): void
+    {
+        $data = json_decode($this->userData, true, 512, \JSON_THROW_ON_ERROR);
+
+        $date = new \DateTime();
+        $date->setTimezone(new DateTimeZone('Europe/London'));
+        $dateString = $date->format('ymdHi');
+
+        $this->orderId
+            = $this->transactionId
+            = $this->reference = $_SESSION['orderId'] =
+            substr($dateString . $data['tenancynumber'], 0, 16);
+    }
+
     private function lloydsCreateSession(): string
     {
         $response = $this->client->request(
@@ -114,7 +118,7 @@ class ApiService
                 'verify_peer' => ! ($_ENV['PROXY'] === "true"),
                 'proxy'       => $_ENV['PROXY'] === "true" ? '127.0.0.1:8888' : false,
                 'auth_basic'  => ['merchant.' . $this->merchantId, $this->password],
-            ]
+            ],
         );
 
         return $this->sessionId = json_decode($response->getContent(false), null, 512, \JSON_THROW_ON_ERROR)->session->id;
@@ -149,7 +153,7 @@ class ApiService
                     'verify_peer' => ! ($_ENV['PROXY'] === "true"),
                     'proxy'       => $_ENV['PROXY'] === "true" ? '127.0.0.1:8888' : false,
                     'auth_basic'  => ['merchant.' . $this->merchantId, $this->password],
-                ]
+                ],
             );
         } catch (ClientException $exception) {
             echo $exception->getResponse()->getContent(false);
@@ -170,7 +174,7 @@ class ApiService
                 'verify_peer' => ! ($_ENV['PROXY'] === "true"),
                 'proxy'       => $_ENV['PROXY'] === "true" ? '127.0.0.1:8888' : false,
                 'auth_basic'  => ['merchant.' . $this->merchantId, $this->password],
-            ]
+            ],
         );
 
         return json_decode($response->getContent(false), true, 512, \JSON_THROW_ON_ERROR);
